@@ -16,7 +16,7 @@ Assuming `~/MagicMirror` is the directory where you installed MagicMirror².
 
 ```bash
 cd ~/MagicMirror/modules
-git clone https://gitlab.com/chicklets921/MMM-SooLocks.git
+git clone https://github.com/chicklets921/MMM-SooLocks.git
 ```
 
 ### Update your config.js file
