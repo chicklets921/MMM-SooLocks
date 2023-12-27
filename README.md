@@ -30,6 +30,8 @@ var config = {
             module: 'MMM-SooLocks',
             position: 'top_right',
             config: {
+                showImages: true,
+                numberOfShips: 5,
                 frequency: 30 * 60 * 1000,
             },
         },
@@ -50,5 +52,4 @@ git pull
 
 ## Known issues and limitations
 
--   No error handing for now but that will be added soon
--   Need to add 'Last Updated' timestamp to make sure data is fresh
+-   Little to no error handing for now but that will be added soon
