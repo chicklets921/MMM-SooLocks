@@ -12,7 +12,8 @@ module.exports = NodeHelper.create({
 
     async fetchBoatData(config) {
         const { numberOfShips, maxRetries, retryDelay } = config;
-        const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+        const nodeVersion = process.versions.node;
+
         const headers = {
             'User-Agent': `Mozilla/5.0 (Node.js ${nodeVersion}) MagicMirror/${global.version}`,
             'Cache-Control': 'max-age=0, no-cache, no-store, must-revalidate',
@@ -35,10 +36,18 @@ module.exports = NodeHelper.create({
             } catch (err) {
                 if (attempt < maxRetries) {
                     const delay = retryDelay * Math.pow(2, attempt);
-                    Log.error('Unable to fetch -', err, `Retrying in ${delay / 1000}s`);
+                    const attemptNumber = attempt + 1;
+                    Log.error(
+                        'Unable to fetch -',
+                        err,
+                        `Retry ${attemptNumber}/${maxRetries} in ${delay / 1000}s`
+                    );
                     this.sendSocketNotification(
                         'FETCH_RETRY',
-                        `Retrying in ${Math.round(delay / 1000)}s...`
+                        `Retry ${attemptNumber}/${maxRetries} in ${Math.round(
+                            delay / 1000
+                        )}s...`
+
                     );
                     setTimeout(() => attemptFetch(attempt + 1), delay);
                 } else {

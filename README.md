@@ -52,7 +52,8 @@ var config = {
 | `retryDelay` | `60 * 1000` | Initial delay (ms) before a retry; doubles after each failure. |
 
 On a failed fetch the module will retry using exponential backoff. Progress
-messages such as "Retrying in 60s..." will be displayed on the frontend while
+messages such as "Retry 2/3 in 120s..." will be displayed on the frontend while
+
 waiting between attempts. After `maxRetries` attempts the module stops retrying
 until the next scheduled refresh.
 
