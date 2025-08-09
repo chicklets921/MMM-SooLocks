@@ -39,20 +39,30 @@ Module.register('MMM-SooLocks', {
         );
         boatScheduleWrapper.innerHTML = '';
 
+        if (!data || !Array.isArray(data.rows) || data.rows.length === 0) {
+            boatScheduleWrapper.innerText = 'No boat data available';
+            boatScheduleWrapper.appendChild(this.getTimeStamp());
+            return;
+        }
+
         const fragment = document.createDocumentFragment();
 
         for (const ship of data.rows) {
             const info = document.createElement('tr');
 
-            const vesselParts = ship.vessel_name.split(';');
+            const vesselParts = typeof ship.vessel_name === 'string'
+                ? ship.vessel_name.split(';')
+                : ['Unknown Vessel'];
 
             const vessel_name = document.createElement('div');
             vessel_name.className = 'xsmall';
-            vessel_name.innerText = vesselParts[0];
+            vessel_name.innerText = vesselParts[0] || 'Unknown Vessel';
 
             const vessel_direction = document.createElement('div');
             vessel_direction.className = 'xsmall';
-            vessel_direction.innerText = `${ship.direction_lbl} @ ${ship.destination_eta}`;
+            const direction = ship.direction_lbl || 'Unknown direction';
+            const eta = ship.destination_eta || 'Unknown ETA';
+            vessel_direction.innerText = `${direction} @ ${eta}`;
 
             const vessel_destination = document.createElement('div');
             vessel_destination.className = 'xsmall';
@@ -62,7 +72,7 @@ Module.register('MMM-SooLocks', {
 
             info.append(vessel_name, vessel_direction, vessel_destination);
 
-            if (this.config.showImages) {
+            if (this.config.showImages && vesselParts[4]) {
                 const vessel_image = document.createElement('img');
                 vessel_image.src = vesselParts[4];
                 vessel_image.width = '100';
@@ -97,6 +107,8 @@ Module.register('MMM-SooLocks', {
             boatScheduleWrapper.appendChild(this.getTimeStamp());
         } else if (notification === 'BOAT_LOCATIONS') {
             this.processBoatInfo(payload);
+        } else {
+            Log.warn(`${this.name}: Unknown notification ${notification}`);
         }
     },
 });

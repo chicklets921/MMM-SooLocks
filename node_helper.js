@@ -21,7 +21,13 @@ module.exports = NodeHelper.create({
 
         try {
             const response = await fetch(url, { headers });
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
             const data = await response.json();
+            if (!data || !Array.isArray(data.rows)) {
+                throw new Error('Malformed data structure received');
+            }
             Log.info('Pulling info...');
             this.sendSocketNotification('BOAT_LOCATIONS', data);
         } catch (err) {
@@ -37,6 +43,8 @@ module.exports = NodeHelper.create({
         Log.info(`${this.name}: Starting to fetch schedule...`);
         if (notification === 'GET_BOAT_INFO') {
             this.fetchBoatData(payload);
+        } else {
+            Log.warn(`${this.name}: Unknown notification ${notification}`);
         }
     },
 });
