@@ -4,6 +4,7 @@ Module.register('MMM-SooLocks', {
         showImages: false,
         numberOfShips: 5,
         fetchInterval: 30 * 60 * 1000,
+        fetchTimeout: 10 * 1000,
     },
 
     start: function () {
@@ -30,7 +31,10 @@ Module.register('MMM-SooLocks', {
     },
 
     getBoatInfo: function () {
-        this.sendSocketNotification('GET_BOAT_INFO', this.config.numberOfShips);
+        this.sendSocketNotification('GET_BOAT_INFO', {
+            numberOfShips: this.config.numberOfShips,
+            fetchTimeout: this.config.fetchTimeout,
+        });
     },
 
     processBoatInfo: function (data) {
@@ -107,6 +111,8 @@ Module.register('MMM-SooLocks', {
             boatScheduleWrapper.appendChild(this.getTimeStamp());
         } else if (notification === 'BOAT_LOCATIONS') {
             this.processBoatInfo(payload);
+        } else if (notification === 'FETCH_RETRY') {
+            this.getBoatInfo();
         } else {
             Log.warn(`${this.name}: Unknown notification ${notification}`);
         }

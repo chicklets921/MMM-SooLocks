@@ -10,7 +10,7 @@ module.exports = NodeHelper.create({
         Log.log(`Stopping module helper: ${this.name}`);
     },
 
-    async fetchBoatData(numberOfShips) {
+    async fetchBoatData({ numberOfShips, fetchTimeout = 10 * 1000 }) {
         const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
         const headers = {
             'User-Agent': `Mozilla/5.0 (Node.js ${nodeVersion}) MagicMirror/${global.version}`,
@@ -19,8 +19,12 @@ module.exports = NodeHelper.create({
         };
         const url = `https://ais.boatnerd.com/passage/getPassageData?search=&sort=destination_eta&order=desc&offset=0&limit=${numberOfShips}&port=12`;
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+
         try {
-            const response = await fetch(url, { headers });
+            const response = await fetch(url, { headers, signal: controller.signal });
+            clearTimeout(timeoutId);
             if (!response.ok) {
                 throw new Error(`HTTP error ${response.status}`);
             }
@@ -31,11 +35,17 @@ module.exports = NodeHelper.create({
             Log.info('Pulling info...');
             this.sendSocketNotification('BOAT_LOCATIONS', data);
         } catch (err) {
-            Log.error('********** Unable to fetch -', err);
-            this.sendSocketNotification(
-                'FAILED_TO_FETCH',
-                'Failed to get boat data.\nPlease restart device\nor wait until the next reload.'
-            );
+            clearTimeout(timeoutId);
+            if (err.name === 'AbortError') {
+                Log.error('********** Fetch timeout -', err);
+                this.sendSocketNotification('FETCH_RETRY');
+            } else {
+                Log.error('********** Unable to fetch -', err);
+                this.sendSocketNotification(
+                    'FAILED_TO_FETCH',
+                    'Failed to get boat data.\nPlease restart device\nor wait until the next reload.'
+                );
+            }
         }
     },
 

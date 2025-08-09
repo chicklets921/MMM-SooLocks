@@ -32,14 +32,17 @@ var config = {
             config: {
                 showImages: true,
                 numberOfShips: 5,
-                frequency: 30 * 60 * 1000,
+                fetchInterval: 30 * 60 * 1000,
+                fetchTimeout: 10 * 1000,
             },
         },
     ],
 };
 ```
-
-This is the only config setup for now. More features may be added in the future.
+The `fetchTimeout` option controls how long the helper waits before aborting a
+stalled request. When a request is aborted, the helper immediately sends a
+`FETCH_RETRY` notification so the module can retry without waiting for the
+next `fetchInterval`.
 
 ## Update to new versions
 
