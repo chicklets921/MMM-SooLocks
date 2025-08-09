@@ -54,11 +54,6 @@ var config = {
 On a failed fetch the module will retry using exponential backoff. Progress
 messages such as "Retry 2/3 in 120s..." will be displayed on the frontend while
 
-waiting between attempts. After `maxRetries` attempts the module stops retrying
-until the next scheduled refresh.
-
-This is the only config setup for now. More features may be added in the future.
-
 ## Update to new versions
 
 Assuming `~/MagicMirror` is the directory where you installed MagicMirror².
@@ -67,7 +62,3 @@ Assuming `~/MagicMirror` is the directory where you installed MagicMirror².
 cd ~/MagicMirror/modules/MMM-SooLocks
 git pull
 ```
-
-## Known issues and limitations
-
--   Little to no error handing for now but that will be added soon
