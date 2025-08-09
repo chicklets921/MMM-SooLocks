@@ -34,39 +34,47 @@ Module.register('MMM-SooLocks', {
     },
 
     processBoatInfo: function (data) {
-        let boatScheduleWrapper = document.getElementById(
+        const boatScheduleWrapper = document.getElementById(
             'boatScheduleWrapper'
         );
         boatScheduleWrapper.innerHTML = '';
 
-        for (let ship of data.rows) {
-            let info = document.createElement('tr');
+        const fragment = document.createDocumentFragment();
 
-            let vessel_name = document.createElement('div');
+        for (const ship of data.rows) {
+            const info = document.createElement('tr');
+
+            const vesselParts = ship.vessel_name.split(';');
+
+            const vessel_name = document.createElement('div');
             vessel_name.className = 'xsmall';
-            vessel_name.innerText = ship.vessel_name.split(';')[0];
+            vessel_name.innerText = vesselParts[0];
 
-            let vessel_direction = document.createElement('div');
+            const vessel_direction = document.createElement('div');
             vessel_direction.className = 'xsmall';
             vessel_direction.innerText = `${ship.direction_lbl} @ ${ship.destination_eta}`;
 
-            let vessel_destination = document.createElement('div');
+            const vessel_destination = document.createElement('div');
             vessel_destination.className = 'xsmall';
             vessel_destination.innerText = `Dest: ${
                 ship.destination || 'Not Available'
             }`;
 
-            let vessel_image = document.createElement('img');
-            vessel_image.src = ship.vessel_name.split(';')[4];
-            vessel_image.width = '100';
-            vessel_image.style = 'aspect-ratio:3/2';
-
             info.append(vessel_name, vessel_direction, vessel_destination);
-            if (this.config.showImages) info.append(vessel_image);
+
+            if (this.config.showImages) {
+                const vessel_image = document.createElement('img');
+                vessel_image.src = vesselParts[4];
+                vessel_image.width = '100';
+                vessel_image.style = 'aspect-ratio:3/2';
+                info.append(vessel_image);
+            }
+
             info.append(document.createElement('hr'));
-            boatScheduleWrapper.appendChild(info);
+            fragment.appendChild(info);
         }
 
+        boatScheduleWrapper.appendChild(fragment);
         boatScheduleWrapper.appendChild(this.getTimeStamp());
     },
 
