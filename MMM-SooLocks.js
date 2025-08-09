@@ -4,6 +4,8 @@ Module.register('MMM-SooLocks', {
         showImages: false,
         numberOfShips: 5,
         fetchInterval: 30 * 60 * 1000,
+        maxRetries: 3,
+        retryDelay: 60 * 1000,
     },
 
     start: function () {
@@ -30,7 +32,11 @@ Module.register('MMM-SooLocks', {
     },
 
     getBoatInfo: function () {
-        this.sendSocketNotification('GET_BOAT_INFO', this.config.numberOfShips);
+        this.sendSocketNotification('GET_BOAT_INFO', {
+            numberOfShips: this.config.numberOfShips,
+            maxRetries: this.config.maxRetries,
+            retryDelay: this.config.retryDelay,
+        });
     },
 
     processBoatInfo: function (data) {
@@ -99,10 +105,11 @@ Module.register('MMM-SooLocks', {
 
     // socketNotificationReceived from helper
     socketNotificationReceived: function (notification, payload) {
+        let boatScheduleWrapper = document.getElementById('boatScheduleWrapper');
         if (notification === 'FAILED_TO_FETCH') {
-            let boatScheduleWrapper = document.getElementById(
-                'boatScheduleWrapper'
-            );
+            boatScheduleWrapper.innerText = payload;
+            boatScheduleWrapper.appendChild(this.getTimeStamp());
+        } else if (notification === 'FETCH_RETRY') {
             boatScheduleWrapper.innerText = payload;
             boatScheduleWrapper.appendChild(this.getTimeStamp());
         } else if (notification === 'BOAT_LOCATIONS') {
