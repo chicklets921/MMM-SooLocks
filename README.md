@@ -53,6 +53,7 @@ var config = {
 
 On a failed fetch the module will retry using exponential backoff. Progress
 messages such as "Retry 2/3 in 120s..." will be displayed on the frontend while
+
 waiting between attempts. After `maxRetries` attempts the module stops retrying
 until the next scheduled refresh.
 

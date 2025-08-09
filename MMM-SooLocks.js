@@ -112,6 +112,8 @@ Module.register('MMM-SooLocks', {
         } else if (notification === 'FETCH_RETRY') {
             boatScheduleWrapper.innerText = payload;
             boatScheduleWrapper.appendChild(this.getTimeStamp());
+        } else if (notification === 'FETCH_RETRY') {
+            boatScheduleWrapper.innerText = payload;
         } else if (notification === 'BOAT_LOCATIONS') {
             this.processBoatInfo(payload);
         } else {
